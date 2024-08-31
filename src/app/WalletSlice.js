@@ -9,9 +9,13 @@ export const counterSlice = createSlice({
 
     disconnect: (state) => {
       state.value = null
+      return state
     },
     setWallet: (state, action) => {
       state.value = action.payload
+      console.log(state.value)
+      return state
+
     },
   },
 })

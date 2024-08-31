@@ -58,7 +58,7 @@ setAddressValid(true)
         value={SearchAddress}
         onFocus={() => setIsPopoverOpen(true)}
         onChange={checkAddress}
-        placeholder="Enter Ethereum address"
+        placeholder="Search for an Ethereum address"
       />
       {isPopoverOpen && (
         <div

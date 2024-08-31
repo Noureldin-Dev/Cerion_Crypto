@@ -1,9 +1,10 @@
+
+'use server'
 import axios from 'axios';
 
 export default async function RetrieveBalance(address) {
-  if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
-    throw new Error('Invalid Ethereum address');
-  }
+  // Ensure the address is valid
+
 
   const baseURL = 'https://eth-mainnet.g.alchemy.com/v2/' + process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
 
@@ -51,12 +52,13 @@ export default async function RetrieveBalance(address) {
         Coin: metadata.data.result.name,
         Balance: balance,
         Symbol: metadata.data.result.symbol,
+        Contract: {"tokenAddress":token.contractAddress} // Include the contract address here
       };
     }));
 
     return CoinsArray;
   } catch (error) {
     console.error('Error fetching balance:', error);
-    throw error;
+    // throw error;
   }
 }

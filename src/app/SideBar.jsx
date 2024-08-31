@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Flex, Heading, Text, Box, Spacer, useDisclosure } from '@chakra-ui/react'
+import { Button, Flex, Heading, Text, Box, Spacer, useDisclosure, useToast } from '@chakra-ui/react'
 import { GrHome, GrOverview } from "react-icons/gr";
 import { FaRegHeart } from "react-icons/fa6";
 import { FiSend, FiSettings } from "react-icons/fi";
@@ -30,7 +30,7 @@ const SideBar = () => {
  const account =  useSelector((state) => state.wallet.value)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch()
-
+const toast = useToast()
   const popupRef = useRef(null);
 
 
@@ -40,6 +40,14 @@ const SideBar = () => {
 
     dispatch(disconnect())
     console.log("logged out");
+    toast({
+      title: "Wallet disconnected",
+      description: `Your wallet is now disconnected.`,
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+      position:"bottom-right"
+    });
     onClose()
   }
 
@@ -62,7 +70,7 @@ const SideBar = () => {
 
   return (
     <>
-      <Flex width={"13vw"} height="100vh" padding={2} position="sticky" flexDir="column" gap={9} bgColor="#1D1D21" color="#1D1D21" textColor="white">
+      <Flex w={[90, 90, 300]} height="100vh" padding={2} position="sticky" flexDir="column" gap={9} bgColor="#1D1D21" color="#1D1D21" textColor="white">
 
         <Flex marginTop={10} flexDir="column" gap={7}>
         {account != null ? 
@@ -78,47 +86,56 @@ const SideBar = () => {
        >
          <Flex gap={2}>
            <Image width={40} height={40} src={pfp} />
-           <Flex alignItems="flex-start" flexDir="column" gap={2}>
-             <Text size="sm">{account == null? "":shortenAddress(account)}</Text>
-             <Text size="sm">$2</Text>
+           <Flex display={["none", "none", "unset"]} alignItems="flex-start" flexDir="column" gap={2}>
+             <Text display={["none", "none", "unset"]} size="sm">{account == null? "":shortenAddress(account)}</Text>
+             <Text display={["none", "none", "flex"]} size="sm">Eth Address</Text>
            </Flex>
          </Flex>
        </Button>
           :
-            <Flex flexDir="column" gap={2} justifyContent="center" alignItems="center">
-              <Heading size="md">Welcome to Cerion</Heading>
-              <Text>Your crypto wallet <br /> for everything on chain</Text>
-              <ConnectWallet/>
+            <Flex  flexDir="column" gap={[8,8,3]} justifyContent="center" alignItems="center">
+              <Heading display={["none", "none","unset"]} size="md">Welcome to Cerion</Heading>
+              <Heading display={["unset", "unset", "none"]} size="xs">Cerion</Heading>
+              <Text display={["none","none" ,"unset"]} textAlign="center">Your crypto wallet <br /> for everything on chain</Text>
+              <ConnectWallet isSideBar/>
             </Flex>
           }
-          <SidebarButton Title={"Overview"} Icon={<GrHome />} />
           <SidebarButton Title={"Explore"} Icon={<GrOverview />} />
-          <SidebarButton Title={"Favourites"} Icon={<FaRegHeart />} />
+          {account != null? 
+<>
+          <SidebarButton Title={"My Wallet"} Icon={<GrHome />} />
           <SidebarButton Title={"Send"} Icon={<FiSend />} />
+          </>
+          :<></>
+          }
           <SidebarButton Title={"Settings"} Icon={<FiSettings />} />
         </Flex>
       </Flex>
 
       {isOpen && (
-        <Box
+        <Flex
+        flexDirection="column"
+        gap={4}
           ref={popupRef}
           position="absolute"
-          top={20} // adjust based on your layout
-          left={5} // adjust based on your layout
+          top="120px" // adjust based on your layout
+          left={20} // adjust based on your layout
           backgroundColor="#16161A"
           color="white"
           padding={4}
           borderRadius="8px"
           boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
           zIndex="1000"
+          height="max-content"
+          width="max-content"
         >
-          <Text>{ account == null? <></>:()=>shortenAddress(account)}</Text>
-          <Text>$7.03 • MetaMask</Text>
+          <Text>{ shortenAddress(account)}</Text>
+          <Text>Eth Address • MetaMask</Text>
           <Flex flexDir="column">
-          <Button variant="link" textColor="white">Connect another wallet</Button>
-          <Button onClick={disconnectWallet} variant="link" textColor="white">Disconnect Wallet</Button>
+          {/* <Button variant="link" textColor="white">Connect another wallet</Button> */}
+          <Button onClick={disconnectWallet} variant="outline" color="white" _hover={{bg:"#2D2D32"}} >Disconnect Wallet</Button>
           </Flex>
-        </Box>
+        </Flex>
       )}
     </>
   );
