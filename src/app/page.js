@@ -1,13 +1,11 @@
 "use client"
 
 import { AbsoluteCenter, Box, Button, Center, Divider, Flex, Heading, Input, Link, Text } from "@chakra-ui/react";
-import Image from "next/image";
-import CoinsList from "./CoinsList";
-import crypto_address_validator from "cryptocurrency-address-validator";
-import Metamask from "../../public/metamask.svg";
+
+
 import { useEffect, useState } from "react";
 import RetrieveBalance from "./RetrieveBalance";
-import { isAddress } from "ethers";
+
 import SearchBar from "./SearchBar";
 import ConnectWallet from "./ConnectWallet";
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,18 +15,7 @@ export default function Home() {
   const [Coins, setCoins] = useState(null);
   const account = useSelector((state) => state.wallet.value);
 
-  async function connectWallet() {
-    window.ethereum
-      .request({
-        method: "eth_requestAccounts",
-      })
-      .then((accounts) => {
-        setAccount(accounts[0]);
-      })
-      .catch((error) => {
-        alert("Something went wrong");
-      });
-  }
+
 
   useEffect(() => {
     console.log("hello");
