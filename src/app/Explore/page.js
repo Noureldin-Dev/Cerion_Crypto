@@ -1,7 +1,7 @@
 "use client"
 
 import { IoWaterOutline } from "react-icons/io5";
-import { Box, Flex, Heading, Image, Skeleton, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Image , Skeleton, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Fetchcryptoprices from "../FetchCryptoPrices";
 import { BsGraphDownArrow, BsGraphUpArrow } from "react-icons/bs";
@@ -69,7 +69,7 @@ const router = useRouter()
     }
 
     GetPrices();
-  }, []);
+  } );
 
   return (
     <Flex
@@ -194,7 +194,7 @@ const router = useRouter()
               >
                 <Flex alignItems="center" justifyContent="space-between">
                   <Flex alignItems="center" gap={3}>
-                    <Image src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
+                    <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
                     <Heading size="sm">{coin.tokenName}</Heading>
                   </Flex>
                   <Text fontSize="xs" color="blue.400">🔵</Text>
@@ -243,7 +243,7 @@ const router = useRouter()
               >
                 <Flex alignItems="center" justifyContent="space-between">
                   <Flex alignItems="center" gap={3}>
-                    <Image src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
+                    <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
                     <Heading size="sm">{coin.tokenName}</Heading>
                   </Flex>
                   <Text fontSize="xs" color="blue.400">🔵</Text>
@@ -293,7 +293,7 @@ const router = useRouter()
               >
                 <Flex alignItems="center" justifyContent="space-between">
                   <Flex alignItems="center" gap={3}>
-                    <Image src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
+                    <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
                     <Heading size="sm">{coin.tokenName}</Heading>
                   </Flex>
                   <Text fontSize="xs" color="blue.400">🔵</Text>
