@@ -1,5 +1,5 @@
 "use client"
-
+import { HiPlus } from "react-icons/hi";
 import { Button, Flex, Heading, Text, Box, Spacer, useDisclosure, useToast } from '@chakra-ui/react'
 import { GrHome, GrOverview } from "react-icons/gr";
 import { FaRegHeart } from "react-icons/fa6";
@@ -8,6 +8,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import SidebarButton from './SidebarButton';
 import Image from 'next/image';
 import pfp from "../../public/pfp.png"
+import { LuBrain } from "react-icons/lu";
+
 
 import { disconnect } from './WalletSlice';
 import { useSelector, useDispatch } from 'react-redux'
@@ -101,6 +103,9 @@ const toast = useToast()
             </Flex>
           }
           <SidebarButton Title={"Explore"} Icon={<GrOverview />} />
+          <SidebarButton Destination="AI" Title={"AI Market Analysis"} Icon={<LuBrain />} />
+          
+
           {account != null? 
 <>
           <SidebarButton Title={"My Wallet"} Icon={<GrHome />} />
@@ -108,8 +113,9 @@ const toast = useToast()
           </>
           :<></>
           }
+          <SidebarButton Title={"Buy Crypto"} Destination="Buy" Icon={<HiPlus />} />
           <SidebarButton Title={"Settings"} Icon={<FiSettings />} />
-        </Flex>
+          </Flex>
       </Flex>
 
       {isOpen && (

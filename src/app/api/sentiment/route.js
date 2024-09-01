@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import fetchCryptoNews from './NewsApi';
-const Sentiment = require('sentiment');
+import Sentiment from 'sentiment';
 
 // Initialize sentiment analyzer
 const sentiment = new Sentiment();
@@ -44,7 +44,7 @@ async function calculateAverageSentiment(articles) {
     console.log("totalSentiment");
     console.log(totalSentiment);
 
-    return totalSentiment+5;
+    return totalSentiment > 5? 10 : totalSentiment+5;
 }
 
 export async function POST(req) {
