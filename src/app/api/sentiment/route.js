@@ -1,79 +1,50 @@
-// Update your sentiment API handler
-
 import { NextResponse } from 'next/server';
 import fetchCryptoNews from './NewsApi';
-const tf = require('@tensorflow/tfjs');
+const Sentiment = require('sentiment');
 
-// Use a global variable to hold the model
-let model = null;
-let isModelInUse = false;
+// Initialize sentiment analyzer
+const sentiment = new Sentiment();
 
-function initializeModel() {
+// Function to analyze sentiment of a single text
+async function analyzeSentiment(text) {
     try {
-        if (!model) {
-            tf.disposeVariables();  // Clear any previously registered variables
-            model = tf.sequential();  // Create the model
-            model.add(tf.layers.dense({ inputShape: [1], units: 1, activation: 'sigmoid' }));
-            model.compile({ optimizer: 'sgd', loss: 'binaryCrossentropy' });
-            console.log('Model initialized successfully');
-        }
+        const result = sentiment.analyze(text);
+        console.log(result.score);
+        return result.score;  // Return the sentiment score
     } catch (error) {
-        console.error('Error during model initialization:', error);
-        throw error;
-    }
-}
-
-async function analyzeSentiment(userInput) {
-    try {
-        while (isModelInUse) {
-            await new Promise(resolve => setTimeout(resolve, 10));
-        }
-        isModelInUse = true;  // Lock the model
-
-        initializeModel();
-
-        const result = tf.tidy(() => {
-            const processedText = preprocessText(userInput);
-            const tokenizedText = tokenizeText(processedText);
-            const inputTensor = tf.tensor([[tokenizedText.length]]);
-            const prediction = model.predict(inputTensor);
-            return prediction.arraySync()[0][0];  // Extract the value
-        });
-
-        isModelInUse = false;  // Release the lock
-        return result;
-
-    } catch (error) {
-        isModelInUse = false;  // Ensure the lock is released in case of an error
         console.error('Error during sentiment analysis:', error);
         throw error;
     }
 }
 
-function preprocessText(text) {
-    return text.toLowerCase().replace(/[^a-z\s]/g, '');
-}
+// Calculate average sentiment from news articles' titles
+async function calculateAverageSentiment(articles) {
+    console.log("calculate");
 
-function tokenizeText(text) {
-    return text.split(/\s+/);
-}
+    if (articles.length === 0) return 0;
 
-// Calculate average sentiment from news articles
-function calculateAverageSentiment(articles) {
-  if (articles.length === 0) return 0;
+    let totalSentiment = 0;
+    let count = 0;
 
-  let totalSentiment = 0;
-  let totalWeight = 0;
+    // Create an array of promises for sentiment analysis
+    const sentimentPromises = articles.map(async (article) => {
+        const title = article.title;
+        if (title) {
+            const sentimentScore = await analyzeSentiment(title);
+            console.log("sentiment");
+            console.log(sentimentScore);
+            totalSentiment += sentimentScore; // Accumulate the sentiment scores
+            count += 1;
+        }
+    });
 
-  articles.forEach(article => {
-    const sentiment = article.sentiment;
-    const weight = sentiment > 0 ? sentiment : 0; // Adjust weight logic as needed
+    // Wait for all promises to complete
+    await Promise.all(sentimentPromises);
 
-    totalSentiment += sentiment * weight;
-    totalWeight += weight;
-  });
+    console.log("totalSentiment");
+    console.log(totalSentiment);
 
-  return totalWeight > 0 ? totalSentiment / totalWeight : 0;
+    return totalSentiment+5;
 }
 
 export async function POST(req) {
@@ -97,16 +68,17 @@ export async function POST(req) {
 
         console.log('Received user input:', body.userInput);
 
-        const sentiment = await analyzeSentiment(body.userInput);
-        console.log('Sentiment analysis result:', sentiment);
+        // Fetch news articles based on user input
+        const articles = await fetchCryptoNews(body.userInput);
 
-        const news = await fetchCryptoNews(body.userInput);
-        const averageSentiment = calculateAverageSentiment(news);
+        // Calculate average sentiment from article titles
+        const averageSentiment = await calculateAverageSentiment(articles);
         console.log('Calculated average sentiment:', averageSentiment);
 
-        return NextResponse.json({ averageSentiment, news });
+        // Return the average sentiment and articles
+        return NextResponse.json({ averageSentiment, articles });
     } catch (err) {
         console.error('Internal server error:', err);
-        return NextResponse.json({ message: "internal server error" }, { status: 500 });
+        return NextResponse.json({ message: "Internal server error" }, { status: 500 });
     }
 }
