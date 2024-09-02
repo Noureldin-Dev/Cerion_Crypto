@@ -98,11 +98,14 @@ const Page = () => {
 <Heading size="md">Articles used in analysis</Heading>
 
             {sentimentData.articles.map(article=>
-              <Flex flexDir={["column","column","row"]} gap={4} >
+              <Flex key={article.url} flexDir={["column","column","row"]} gap={4} >
                 <Img borderRadius="10px" src={article.image} maxH="150px" maxW="150px"/>
                 <Flex alignItems="flex-start" justifyContent="center" gap={2} flexDir="column">
                 <Heading size={["sm","sm","md"]}>{article.title}</Heading>
-                <Button variant="link">See article {">"}</Button>
+                <Button onClick={()=> {
+                  window.open(article.url, '_blank').focus();
+
+                }} variant="link">See article {">"}</Button>
                 </Flex>
               </Flex>
               

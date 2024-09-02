@@ -39,18 +39,14 @@ const BuyCryptoPage = () => {
         </Select>
 
 <InputGroup alignSelf="center" textAlign="center" width="45%"  variant="unstyled" mb={4}>
-            {amount > 0?
+<InputLeftElement
+                pointerEvents="none"
+                fontSize="6xl"
+                color="white"
+              >
 
-
-            <InputLeftElement
-            _selected={{borderRadius:0}}
-              pointerEvents="none"
-              fontSize="6xl"
-              color="white"
-              children={currency === "EUR" ? "€" : "$"}
-            //   display={amount > 0? "flex": "none"}
-              />:<></>
-            }
+                {amount>0? currency === "EUR" ? "€" : "$":""}
+              </InputLeftElement>
             <Input
             _selected={{borderRadius:0}}
             placeholder={currency === "EUR" ? "€0" : "$0"}
@@ -79,6 +75,7 @@ const BuyCryptoPage = () => {
           <Flex gap={3} flexDir="column">
           {providers.map((provider, index) => (
             <Flex
+            key={provider.name}
             cursor="pointer"
             onClick={() => handleProviderSelect(provider.name)}
 
