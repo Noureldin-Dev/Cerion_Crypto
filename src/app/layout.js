@@ -1,21 +1,27 @@
 // app/layout.tsx
-import { Divider, Flex } from '@chakra-ui/react'
+import { ColorModeScript, Divider, Flex } from '@chakra-ui/react'
 import { Providers } from './provider'
 import SideBar from './SideBar'
 import SearchBar from './SearchBar' // Import your SearchBar component
 import { ChakraProvider } from "@chakra-ui/react";
-
+import theme from "../theme.js"
+import Background from './Background';
+// const bg = useColorModeValue('#F5F5F7', '#1D1D21')
+// const color = useColorModeValue('black', 'white')
 
 export default function RootLayout({
   children,
-}) {
+}) 
+{
   return (
     <html lang='en'>
-      <body style={{ overflow: 'hidden', background:"#16161A", color:"white" }}>
+      <body  style={{ overflow: 'hidden', color:"white"}}>
         <Providers>
-        <ChakraProvider>
+        <ChakraProvider  >
+        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
 
-          <Flex gap={2} justifyContent="flex-start" height="100vh">
+
+          <Background>
             <Flex flexShrink={0}>
               <SideBar />
             </Flex>
@@ -24,7 +30,7 @@ export default function RootLayout({
               <SearchBar />
               
               </Flex>
-              <Flex bgColor="#16161A" padding={18}>
+              <Flex  padding={18}>
               <Flex
               // background="teal"
       justify="center" // Center horizontally
@@ -40,7 +46,7 @@ export default function RootLayout({
                 </Flex>
               </Flex>
             </Flex>
-          </Flex>
+            </Background>
           </ChakraProvider></Providers>
       </body>
     </html>

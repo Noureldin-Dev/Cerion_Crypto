@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Divider, Flex, Heading, Input, Select, Text, Textarea, Toast, useToast } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Heading, Input, Select, Text, Textarea, Toast, useColorMode, useToast, useColorModeValue } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { disconnect } from "../WalletSlice";
@@ -9,6 +9,10 @@ import ConnectWallet from "../ConnectWallet";
 
 const SettingsPage = () => {
   const [bugDescription, setBugDescription] = useState("");
+  const { colorMode, toggleColorMode } = useColorMode()
+  const bg = useColorModeValue('#EAEAEC', '#1D1D21')
+  const color = useColorModeValue('black', 'white')
+  const inputBg = useColorModeValue('white', '#2E2E32')
   const [feedback, setFeedback] = useState("");
   const [currency, setCurrency] = useState("USD");
   const toast = useToast();
@@ -28,10 +32,7 @@ const SettingsPage = () => {
       isClosable: true,
       position:"bottom-right"
     });
-
   }
-
-
 
   const handleSubmitFeedback = () => {
     // Add logic to submit feedback
@@ -51,7 +52,7 @@ const SettingsPage = () => {
   };
 
   return (    
-    <Flex direction="column" padding={8} maxW="600px" margin="auto" bgColor="#1D1D21" color="white" borderRadius="lg" boxShadow="xl">
+    <Flex direction="column" padding={8} maxW="600px" margin="auto" bgColor={bg} color={color} borderRadius="lg" boxShadow="2xl" >
       <Heading mb={6}>Settings</Heading>
 
       <Divider my={6} borderColor="gray.600" />
@@ -63,7 +64,7 @@ const SettingsPage = () => {
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
           mb={4}
-          bgColor="gray.700"
+          bgColor={inputBg}
           border="none"
           _focus={{ outline: "none", borderColor: "blue.500" }}
         />
@@ -78,7 +79,7 @@ const SettingsPage = () => {
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
           mb={4}
-          bgColor="gray.700"
+          bgColor={inputBg}
           border="none"
           _focus={{ outline: "none", borderColor: "blue.500" }}
         >
@@ -90,18 +91,20 @@ const SettingsPage = () => {
         <Text>Your selected currency: {currency}</Text>
       </Box>
 
+      <Button onClick={toggleColorMode}>
+        Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
+      </Button>
+
       <Divider my={6} borderColor="gray.600" />
 
-{
-  wallet.value == null?
-  <ConnectWallet/>:
-
-
-<Flex flexDir="column" gap={3}>
-        <Text>Connected wallet: {wallet.value}</Text>
-      <Button onClick={disconnectWallet} variant="outline" color="white" _hover={{bg:"#2D2D32"}} >Disconnect Wallet</Button>
-      </Flex>
-}
+      {
+        wallet.value == null ?
+        <ConnectWallet /> :
+        <Flex flexDir="column" gap={3}>
+          <Text>Connected wallet: {wallet.value}</Text>
+          <Button onClick={disconnectWallet} variant="outline" color={color} _hover={{bg: useColorModeValue('#C8C8C8', '#2D2D32')}} >Disconnect Wallet</Button>
+        </Flex>
+      }
     </Flex>
   );
 };

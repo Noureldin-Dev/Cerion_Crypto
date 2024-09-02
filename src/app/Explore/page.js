@@ -1,7 +1,7 @@
 "use client"
 
 import { IoWaterOutline } from "react-icons/io5";
-import { Box, Flex, Heading, Image , Skeleton, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Image, Skeleton, Text, useColorModeValue, Container, SimpleGrid, VStack, HStack, Icon, Button } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Fetchcryptoprices from "../FetchCryptoPrices";
 import { BsGraphDownArrow, BsGraphUpArrow } from "react-icons/bs";
@@ -9,24 +9,18 @@ import { FaChartSimple } from 'react-icons/fa6';
 import { useRouter } from "next/navigation";
 import next from "next";
 
-
-
 function SkeletonCard(){
+  const skeletonBg = useColorModeValue('gray.100', 'gray.700');
   return(
-    <Skeleton borderRadius="10px">
-    <Box
-    // key={coin.tokenAddress}
-                    borderRadius='lg'
-    background="#1D1D21"
-    padding={4}
-    width={{ base: "100%", sm: "290px" }}
-    boxShadow="lg"
-    color="white"
-    height="166px"
-  >
-   
-  </Box>
-  </Skeleton>
+    <Skeleton borderRadius="xl" startColor={skeletonBg} endColor={useColorModeValue('gray.300', 'gray.600')}>
+      <Box
+        borderRadius='xl'
+        padding={6}
+        width="100%"
+        boxShadow="xl"
+        height="180px"
+      />
+    </Skeleton>
   )
 }
 
@@ -34,7 +28,18 @@ function Page() {
   const [blueChips, setBlueChips] = useState(null);
   const [cryptoIndexes, setCryptoIndexes] = useState(null);
   const [stablecoins, setStablecoins] = useState(null);
-const router = useRouter()
+  const bg = useColorModeValue('#F5F5F7', '#16161A')
+  const color = useColorModeValue('#333333', '#E0E0E0')
+  const cardBg = useColorModeValue('#FFFFFF', '#1E1E22')
+  const cardBoxShadow = useColorModeValue('0 4px 6px rgba(0, 0, 0, 0.1)', '0 4px 6px rgba(255, 255, 255, 0.1)')
+  const buttonColors = {
+    gainers: useColorModeValue('#5A9F63', '#6ABF76'),
+    losers: useColorModeValue('#A44D5D', '#C25A6D'),
+    market: useColorModeValue('#429296', '#4FAFB4'),
+    pools: useColorModeValue('#B3872C', '#D6A033'),
+  }
+  const router = useRouter()
+
   // Coin addresses categorized by type
   const blueChipAddresses = [
     "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4", // avax
@@ -49,26 +54,13 @@ const router = useRouter()
   ];
 
   const stablecoinAddresses = [
-    // Add stablecoin addresses here
-    // "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0xdac17f958d2ee523a2206206994597c13d831ec7", // Tether USD (USDT)
     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0x6c3ea9036406852006290770bedfcaba0e23a0e8"
-
   ];
 
   useEffect(() => {
     async function GetPrices() {
-      // const allCoins = await Fetchcryptoprices(,{
-      //   next:{
-      //     revalidate:3600
-      // }
-      // });
-
-      // // Separate coins by category
-      // setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
-      // setCryptoIndexes(allCoins.filter(coin => cryptoIndexAddresses.includes(coin.tokenAddress)));
-      // setStablecoins(allCoins.filter(coin => stablecoinAddresses.includes(coin.tokenAddress)));
       const res = await fetch("/api/coinsdata", {
         next: {
           revalidate:3600
@@ -78,7 +70,7 @@ const router = useRouter()
              ...blueChipAddresses.map(addr => ({ tokenAddress: addr })),
              ...cryptoIndexAddresses.map(addr => ({ tokenAddress: addr })),
              ...stablecoinAddresses.map(addr => ({ tokenAddress: addr })),
-           ] }), // Sending selected crypto
+           ] }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -90,256 +82,260 @@ const router = useRouter()
 
       let allCoins = await res.json();
       allCoins = allCoins.FetchedData
-      // console.log(json.FetchedData)
-            setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
+      setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
       setCryptoIndexes(allCoins.filter(coin => cryptoIndexAddresses.includes(coin.tokenAddress)));
       setStablecoins(allCoins.filter(coin => stablecoinAddresses.includes(coin.tokenAddress)));
     }
 
     GetPrices();
-  } ,[]);
+  }, []);
 
   return (
-    <Flex
-      justify="center"
-      align="flex-start"
-      minHeight="100%"
-      width="80%"
-      pt="20px"
-    >
-      <Flex minW="80%" flexDir="column" gap={4} suppressHydrationWarning>
-        {/* Explore Section */}
-        <Heading mb={4}>Explore</Heading>
-        <Flex flexWrap="wrap" justifyContent="space-between" gap={4} mb={6}>
+    <Container maxW="container.xl" py={10} bg={bg} color={color}>
+      <VStack spacing={10} align="stretch">
+        <Heading size="xl" mb={6}>Explore Crypto</Heading>
+        
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
           <Box
-          onClick={()=> router.push("/Gainers")}
+            onClick={() => router.push("/Gainers")}
             as="button"
-            borderRadius="md"
-            bg="#8ACF93"
+            borderRadius="xl"
+            bg={buttonColors.gainers}
             color="white"
-            px={4}
-            py={2}
-            width={{ base: "100%", sm: "290px" }}
-            height="60px"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            padding={5}
-            gap={2}
+            p={6}
+            height="80px"
+            _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+            transition="all 0.2s"
           >
-            <Text>Top Gainers</Text>
-            <BsGraphUpArrow size={30} />
+            <HStack justify="space-between">
+              <Text fontSize="lg" fontWeight="bold">Top Gainers</Text>
+              <Icon as={BsGraphUpArrow} boxSize={6} />
+            </HStack>
           </Box>
 
           <Box
             as="button"
-            borderRadius="md"
-            bg="#D46D7D"
+            borderRadius="xl"
+            bg={buttonColors.losers}
             color="white"
-            px={4}
-            py={2}
-            width={{ base: "100%", sm: "290px" }}
-            height="60px"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            padding={5}
-            gap={2}
-          onClick={()=> router.push("/Losers")}
-            
+            p={6}
+            height="80px"
+            _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+            transition="all 0.2s"
+            onClick={() => router.push("/Losers")}
           >
-            <Text>Top Losers</Text>
-            <BsGraphDownArrow size={30} />
+            <HStack justify="space-between">
+              <Text fontSize="lg" fontWeight="bold">Top Losers</Text>
+              <Icon as={BsGraphDownArrow} boxSize={6} />
+            </HStack>
           </Box>
 
           <Box
             as="button"
-            borderRadius="md"
-            bg="#62C0C6"
+            borderRadius="xl"
+            bg={buttonColors.market}
             color="white"
-            px={4}
-            py={2}
-            width={{ base: "100%", sm: "290px" }}
-            height="60px"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            padding={5}
-            gap={2}
+            p={6}
+            height="80px"
+            _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+            transition="all 0.2s"
+            onClick={() => router.push("/Market")}
           >
-            <Text>Market</Text>
-            <FaChartSimple size={30} />
+            <HStack justify="space-between">
+              <Text fontSize="lg" fontWeight="bold">Market</Text>
+              <Icon as={FaChartSimple} boxSize={6} />
+            </HStack>
           </Box>
 
           <Box
             as="button"
-            borderRadius="md"
-            bg="#E3A75C"
+            borderRadius="xl"
+            bg={buttonColors.pools}
             color="white"
-            px={4}
-            py={2}
-            width={{ base: "100%", sm: "290px" }}
-            height="60px"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            padding={5}
-            gap={2}
+            p={6}
+            height="80px"
+            _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+            transition="all 0.2s"
           >
-            <Text>Pools</Text>
-            <IoWaterOutline size={30} />
+            <HStack justify="space-between">
+              <Text fontSize="lg" fontWeight="bold">Pools</Text>
+              <Icon as={IoWaterOutline} boxSize={6} />
+            </HStack>
           </Box>
-        </Flex>
+        </SimpleGrid>
 
-        {/* DeFi Blue Chips Section */}
-        <Flex flexDir="column" gap={1}>
-          <Heading size="md">DeFi Blue Chips</Heading>
-          <Text color="gray" size="sm">Top DeFi tokens by Market Cap</Text>
-        </Flex>
-        <Flex
-          flexWrap="wrap"
-          justifyContent="flex-start"
-          gap={4}
-          direction={{ base: "column", md: "row" }}
-        >
-          {blueChips == null ? (
-            <>
-          <SkeletonCard/>
-          <SkeletonCard/>
-          <SkeletonCard/>
-          </>
-        ) : (
-            blueChips.map(coin => (
-              <Box
-                key={coin.tokenAddress}
-                borderRadius='lg'
-                background="#1D1D21"
-                padding={4}
-                width={{ base: "100%", sm: "290px" }}
-                 boxShadow="lg"
-                color="white"
-                height="166px"
-              >
-                <Flex alignItems="center" justifyContent="space-between">
-                  <Flex alignItems="center" gap={3}>
-                    <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
-                    <Heading size="sm">{coin.tokenName}</Heading>
-                  </Flex>
-                  <Text fontSize="xs" color="blue.400">🔵</Text>
-                </Flex>
+        <VStack align="stretch" spacing={8}>
+          <Box>
+            <Heading size="lg" mb={2}>DeFi Blue Chips</Heading>
+            <Text color="gray.400">Top DeFi tokens by Market Cap</Text>
+          </Box>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+            {blueChips == null ? (
+              <>
+                <SkeletonCard/>
+                <SkeletonCard/>
+                <SkeletonCard/>
+              </>
+            ) : (
+              blueChips.map(coin => (
+                <Box
+                  key={coin.tokenAddress}
+                  borderRadius='xl'
+                  background={cardBg}
+                  p={6}
+                  boxShadow={cardBoxShadow}
+                  _hover={{ transform: 'translateY(-4px)', boxShadow: 'xl' }}
+                  transition="all 0.3s"
+                  position="relative"
+                >
+                  <HStack justify="space-between" mb={4}>
+                    <HStack>
+                      <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='50px' />
+                      <VStack align="start" spacing={0}>
+                        <Heading size="md">{coin.tokenName}</Heading>
+                        <Text fontSize="sm" color="gray.400">{coin.tokenSymbol}</Text>
+                      </VStack>
+                    </HStack>
+                    <Text fontSize="sm" color="blue.400" fontWeight="bold">Blue Chip</Text>
+                  </HStack>
 
-                <Box mt={4}>
-                  <Text fontSize="sm" color="gray.400">Price</Text>
-                  <Text fontSize="2xl" fontWeight="bold">${parseFloat(coin.usdPriceFormatted).toFixed(2)}</Text>
-                  <Text fontSize="sm" color={coin["24hrPercentChange"] > 0 ? "green.400" : "red.400"}>
-                    {parseFloat(coin["24hrPercentChange"]).toFixed(2)}% {coin["24hrPercentChange"] > 0 ? '▲' : '▼'}
-                  </Text>
+                  <VStack align="start" spacing={1}>
+                    <Text fontSize="sm" color="gray.400">Price</Text>
+                    <Text fontSize="2xl" fontWeight="bold">${parseFloat(coin.usdPriceFormatted).toFixed(2)}</Text>
+                    <Text fontSize="md" color={coin["24hrPercentChange"] > 0 ? "green.400" : "red.400"} fontWeight="bold">
+                      {parseFloat(coin["24hrPercentChange"]).toFixed(2)}% {coin["24hrPercentChange"] > 0 ? '▲' : '▼'}
+                    </Text>
+                  </VStack>
+                  <Button
+                    position="absolute"
+                    bottom="4"
+                    right="4"
+                    size="sm"
+                    colorScheme="blue"
+                  >
+                    Trade Now
+                  </Button>
                 </Box>
-              </Box>
-            ))
-          )}
-        </Flex>
+              ))
+            )}
+          </SimpleGrid>
+        </VStack>
 
-        {/* Crypto Indexes Section */}
-        <Flex flexDir="column" gap={1} mt={10}>
-          <Heading size="md">Crypto Indexes</Heading>
-          <Text color="gray" size="sm">Top Crypto Indexes</Text>
-        </Flex>
-        <Flex
-          flexWrap="wrap"
-          justifyContent="flex-start"
-          gap={4}
-          direction={{ base: "column", md: "row" }}
-        >
-          {cryptoIndexes == null ? (
-         <>
-         <SkeletonCard/>
-         <SkeletonCard/>
-         <SkeletonCard/>
-         </>
-          ) : (
-            cryptoIndexes.map(coin => (
-              <Box
-                key={coin.tokenAddress}
-                                borderRadius='lg'
-                background="#1D1D21"
-                padding={4}
-                width={{ base: "100%", sm: "290px" }}
-                 boxShadow="lg"
-                color="white"
-                height="166px"
-              >
-                <Flex alignItems="center" justifyContent="space-between">
-                  <Flex alignItems="center" gap={3}>
-                    <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
-                    <Heading size="sm">{coin.tokenName}</Heading>
-                  </Flex>
-                  <Text fontSize="xs" color="blue.400">🔵</Text>
-                </Flex>
+        <VStack align="stretch" spacing={8}>
+          <Box>
+            <Heading size="lg" mb={2}>Crypto Indexes</Heading>
+            <Text color="gray.400">Top Crypto Indexes</Text>
+          </Box>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+            {cryptoIndexes == null ? (
+              <>
+                <SkeletonCard/>
+                <SkeletonCard/>
+                <SkeletonCard/>
+              </>
+            ) : (
+              cryptoIndexes.map(coin => (
+                <Box
+                  key={coin.tokenAddress}
+                  borderRadius='xl'
+                  background={cardBg}
+                  p={6}
+                  boxShadow={cardBoxShadow}
+                  _hover={{ transform: 'translateY(-4px)', boxShadow: 'xl' }}
+                  transition="all 0.3s"
+                  position="relative"
+                >
+                  <HStack justify="space-between" mb={4}>
+                    <HStack>
+                      <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='50px' />
+                      <VStack align="start" spacing={0}>
+                        <Heading size="md">{coin.tokenName}</Heading>
+                        <Text fontSize="sm" color="gray.400">{coin.tokenSymbol}</Text>
+                      </VStack>
+                    </HStack>
+                    <Text fontSize="sm" color="purple.400" fontWeight="bold">Index</Text>
+                  </HStack>
 
-                <Box mt={4}>
-                  <Text fontSize="sm" color="gray.400">Price</Text>
-                  <Text fontSize="2xl" fontWeight="bold">${parseFloat(coin.usdPriceFormatted).toFixed(2)}</Text>
-                  <Text fontSize="sm" color={coin["24hrPercentChange"] > 0 ? "green.400" : "red.400"}>
-                    {parseFloat(coin["24hrPercentChange"]).toFixed(2)}% {coin["24hrPercentChange"] > 0 ? '▲' : '▼'}
-                  </Text>
+                  <VStack align="start" spacing={1}>
+                    <Text fontSize="sm" color="gray.400">Price</Text>
+                    <Text fontSize="2xl" fontWeight="bold">${parseFloat(coin.usdPriceFormatted).toFixed(2)}</Text>
+                    <Text fontSize="md" color={coin["24hrPercentChange"] > 0 ? "green.400" : "red.400"} fontWeight="bold">
+                      {parseFloat(coin["24hrPercentChange"]).toFixed(2)}% {coin["24hrPercentChange"] > 0 ? '▲' : '▼'}
+                    </Text>
+                  </VStack>
+                  <Button
+                    position="absolute"
+                    bottom="4"
+                    right="4"
+                    size="sm"
+                    colorScheme="blue"
+                  >
+                    Trade Now
+                  </Button>
                 </Box>
-              </Box>
-            ))
-          )}
-        </Flex>
+              ))
+            )}
+          </SimpleGrid>
+        </VStack>
 
-        {/* Stablecoins Section */}
-        <Flex flexDir="column" gap={1} mt={10}>
-          <Heading size="md">Stablecoins</Heading>
-          <Text color="gray" size="sm">Top Stablecoins</Text>
-        </Flex>
-        <Flex
-          flexWrap="wrap"
-          justifyContent="flex-start"
-          gap={4}
-          direction={{ base: "column", md: "row" }}
-        >
-          {stablecoins == null ? (
-         <>
-         <SkeletonCard/>
-         <SkeletonCard/>
-         <SkeletonCard/>
-         </>
-          ) : (
-            stablecoins.map(coin => (
-              <Box
-                key={coin.tokenAddress}
-                                borderRadius='lg'
-                background="#1D1D21"
-                padding={4}
-                width={{ base: "100%", sm: "290px" }}
-                 boxShadow="lg"
-                color="white"
-                height="166px"
+        <VStack align="stretch" spacing={8}>
+          <Box>
+            <Heading size="lg" mb={2}>Stablecoins</Heading>
+            <Text color="gray.400">Top Stablecoins</Text>
+          </Box>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+            {stablecoins == null ? (
+              <>
+                <SkeletonCard/>
+                <SkeletonCard/>
+                <SkeletonCard/>
+              </>
+            ) : (
+              stablecoins.map(coin => (
+                <Box
+                  key={coin.tokenAddress}
+                  borderRadius='xl'
+                  background={cardBg}
+                  p={6}
+                  boxShadow={cardBoxShadow}
+                  _hover={{ transform: 'translateY(-4px)', boxShadow: 'xl' }}
+                  transition="all 0.3s"
+                  position="relative"
+                >
+                  <HStack justify="space-between" mb={4}>
+                    <HStack>
+                      <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='50px' />
+                      <VStack align="start" spacing={0}>
+                        <Heading size="md">{coin.tokenName}</Heading>
+                        <Text fontSize="sm" color="gray.400">{coin.tokenSymbol}</Text>
+                      </VStack>
+                    </HStack>
+                    <Text fontSize="sm" color="teal.400" fontWeight="bold">Stablecoin</Text>
+                  </HStack>
 
-              >
-                <Flex alignItems="center" justifyContent="space-between">
-                  <Flex alignItems="center" gap={3}>
-                    <Image alt="coin's logo" src={coin.tokenLogo} borderRadius='full' boxSize='40px' />
-                    <Heading size="sm">{coin.tokenName}</Heading>
-                  </Flex>
-                  <Text fontSize="xs" color="blue.400">🔵</Text>
-                </Flex>
-
-                <Box mt={4}>
-                  <Text fontSize="sm" color="gray.400">Price</Text>
-                  <Text fontSize="2xl" fontWeight="bold">${parseFloat(coin.usdPriceFormatted).toFixed(2)}</Text>
-                  <Text fontSize="sm" color={coin["24hrPercentChange"] > 0 ? "green.400" : "red.400"}>
-                    {parseFloat(coin["24hrPercentChange"]).toFixed(2)}% {coin["24hrPercentChange"] > 0 ? '▲' : '▼'}
-                  </Text>
+                  <VStack align="start" spacing={1}>
+                    <Text fontSize="sm" color="gray.400">Price</Text>
+                    <Text fontSize="2xl" fontWeight="bold">${parseFloat(coin.usdPriceFormatted).toFixed(2)}</Text>
+                    <Text fontSize="md" color={coin["24hrPercentChange"] > 0 ? "green.400" : "red.400"} fontWeight="bold">
+                      {parseFloat(coin["24hrPercentChange"]).toFixed(2)}% {coin["24hrPercentChange"] > 0 ? '▲' : '▼'}
+                    </Text>
+                  </VStack>
+                  <Button
+                    position="absolute"
+                    bottom="4"
+                    right="4"
+                    size="sm"
+                    colorScheme="blue"
+                  >
+                    Buy Now
+                  </Button>
                 </Box>
-              </Box>
-            ))
-          )}
-        </Flex>
-      </Flex>
-    </Flex>
+              ))
+            )}
+          </SimpleGrid>
+        </VStack>
+      </VStack>
+    </Container>
   );
 }
 

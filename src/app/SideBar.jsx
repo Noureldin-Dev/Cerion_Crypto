@@ -1,6 +1,6 @@
 "use client"
 import { HiPlus } from "react-icons/hi";
-import { Button, Flex, Heading, Text, Box, Spacer, useDisclosure, useToast } from '@chakra-ui/react'
+import { Button, Flex, Heading, Text, Box, Spacer, useDisclosure, useToast, useColorModeValue } from '@chakra-ui/react'
 import { GrHome, GrOverview } from "react-icons/gr";
 import { FaRegHeart } from "react-icons/fa6";
 import { FiSend, FiSettings } from "react-icons/fi";
@@ -14,6 +14,7 @@ import { LuBrain } from "react-icons/lu";
 import { disconnect } from './WalletSlice';
 import { useSelector, useDispatch } from 'react-redux'
 import ConnectWallet from './ConnectWallet';
+
 
 
 function shortenAddress(address) {
@@ -32,6 +33,9 @@ const SideBar = () => {
  const account =  useSelector((state) => state.wallet.value)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch()
+  const bg = useColorModeValue('#EBEBED', '#1D1D21')
+  const color = useColorModeValue('black', 'white')
+
 const toast = useToast()
   const popupRef = useRef(null);
 
@@ -72,7 +76,7 @@ const toast = useToast()
 
   return (
     <>
-      <Flex w={[90, 90, 300]} height="100vh" padding={2} position="sticky" flexDir="column" gap={9} bgColor="#1D1D21" color="#1D1D21" textColor="white">
+      <Flex w={[90, 90, 300]} height="100vh" padding={2} position="sticky" flexDir="column" gap={9} bgColor={bg} color={color} textColor={color}>
 
         <Flex marginTop={10} flexDir="column" gap={7}>
         {account != null ? 

@@ -1,30 +1,17 @@
 "use client"
 
-import { Flex, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, TableCaption, Box, Container, VStack, HStack, Icon, Stat, StatNumber, StatArrow, useColorModeValue, Skeleton, Image } from '@chakra-ui/react'
+import { Flex, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, TableContainer, TableCaption, Box, Container, VStack, HStack, Icon, Stat, StatNumber, StatArrow, useColorModeValue, Skeleton, Image, Input, InputGroup, InputLeftElement, Button, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { FaChartLine } from 'react-icons/fa'
-
-function getTopGainers(coins) {
-  try {
-    console.log(coins)
-    const positiveGainers = coins.filter(coin => parseFloat(coin.price_24h_percent_change) >= 0);
-    const sortedGainers = positiveGainers.sort((a, b) => {
-      return parseFloat(b.price_24h_percent_change) - parseFloat(a.price_24h_percent_change);
-    });
-    return sortedGainers;
-  }
-  catch {
-    return []
-  }
-}
+import { FaChartLine, FaSearch, FaSort } from 'react-icons/fa'
 
 const Page = () => {
-  const [sortedTokens, setSortedTokens] = useState([]);
+  const [tokens, setTokens] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   const bg = useColorModeValue('#F5F5F7', '#16161A')
   const color = useColorModeValue('#333333', '#E0E0E0')
-
   const cardBg = useColorModeValue('white', '#1D1D21')
 
   useEffect(() => {
@@ -44,10 +31,12 @@ const Page = () => {
         }
 
         let allCoins = await res.json();
-        allCoins = allCoins.FetchedData
-        console.log(allCoins)
-        const sortedGainers = getTopGainers(allCoins);
-        setSortedTokens(sortedGainers);
+        allCoins = allCoins.FetchedData;
+        // Remove duplicates based on contract_address
+        const uniqueCoins = allCoins.filter((coin, index, self) =>
+          index === self.findIndex((t) => t.contract_address === coin.contract_address)
+        );
+        setTokens(uniqueCoins);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -58,13 +47,55 @@ const Page = () => {
     GetPrices();
   }, []);
 
+  const filteredTokens = tokens.filter(token =>
+    token.token_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    token.token_symbol.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedTokens = [...filteredTokens].sort((a, b) => {
+    const marketCapA = parseFloat(a.market_cap_usd);
+    const marketCapB = parseFloat(b.market_cap_usd);
+    if (sortOrder === 'asc') {
+      return marketCapA - marketCapB;
+    } else {
+      return marketCapB - marketCapA;
+    }
+  });
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
   return (
     <Container maxW="container.xl" py={10} bg={bg} minH="100vh">
       <VStack spacing={8} align="stretch">
         <Box textAlign="center">
-          <Heading as="h1" size="2xl" mb={2} color={color}>Top Gainers 📈</Heading>
-          <Text fontSize="xl" color={useColorModeValue('gray.600', 'gray.400')}>Discover the best performing cryptocurrencies in the last 24 hours</Text>
+          <Heading as="h1" size="2xl" mb={2} color={color}>Crypto Market Overview 📊</Heading>
+          <Text fontSize="xl" color={useColorModeValue('gray.600', 'gray.400')}>Explore the latest cryptocurrency market data</Text>
         </Box>
+
+        <Flex justifyContent="space-between" alignItems="center">
+          <InputGroup maxW="70%">
+            <InputLeftElement pointerEvents="none" children={<FaSearch color="gray.300" />} />
+            <Input
+              placeholder="Search tokens"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              bg={cardBg}
+              color={color}
+            />
+          </InputGroup>
+
+          <Menu>
+            <MenuButton as={Button} rightIcon={<FaSort />} bg={cardBg} color={color}>
+              Sort by Market Cap
+            </MenuButton>
+            <MenuList>
+              <MenuItem onClick={() => setSortOrder('desc')}>Highest to Lowest</MenuItem>
+              <MenuItem onClick={() => setSortOrder('asc')}>Lowest to Highest</MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
 
         {isLoading ? (
           <VStack spacing={4}>
@@ -73,10 +104,10 @@ const Page = () => {
             ))}
           </VStack>
         ) : sortedTokens.length > 0 ? (
-          <Box borderRadius="lg" boxShadow="xl"  overflowX="auto" bg={cardBg}>
+          <Box borderRadius="lg" boxShadow="xl" overflowX="auto" bg={cardBg}>
             <TableContainer>
               <Table variant="simple">
-                <TableCaption placement="top" fontWeight="bold" fontSize="lg">Top Gainers in the Last 24 Hours</TableCaption>
+                <TableCaption placement="top" fontWeight="bold" fontSize="lg">Cryptocurrency Market Data</TableCaption>
                 <Thead>
                   <Tr>
                     <Th color={color}>Token</Th>
@@ -111,9 +142,9 @@ const Page = () => {
                       </Td>
                       <Td isNumeric>
                         <Stat>
-                          <StatNumber color="green.500" fontSize={["sm", "md"]}>
-                            <StatArrow type="increase" />
-                            {parseFloat(token.price_24h_percent_change).toFixed(2)}%
+                          <StatNumber color={parseFloat(token.price_24h_percent_change) >= 0 ? "green.500" : "red.500"} fontSize={["sm", "md"]}>
+                            <StatArrow type={parseFloat(token.price_24h_percent_change) >= 0 ? "increase" : "decrease"} />
+                            {Math.abs(parseFloat(token.price_24h_percent_change)).toFixed(2)}%
                           </StatNumber>
                         </Stat>
                       </Td>
@@ -130,7 +161,7 @@ const Page = () => {
           </Box>
         ) : (
           <Box textAlign="center" p={8} bg={cardBg} borderRadius="lg" boxShadow="xl">
-            <Text fontSize="xl" color={color}>No top gainers to display at the moment. Check back later!</Text>
+            <Text fontSize="xl" color={color}>No tokens found matching your search. Try a different term.</Text>
           </Box>
         )}
       </VStack>
