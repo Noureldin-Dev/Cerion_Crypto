@@ -5,11 +5,14 @@ import Sentiment from 'sentiment';
 // Initialize sentiment analyzer
 const sentiment = new Sentiment();
 
+// In-memory storage for caching news data per coin
+let cachedNewsData = {};
+let lastFetchTimes = {};
+
 // Function to analyze sentiment of a single text
 async function analyzeSentiment(text) {
     try {
         const result = sentiment.analyze(text);
-        console.log(result.score);
         return result.score;  // Return the sentiment score
     } catch (error) {
         console.error('Error during sentiment analysis:', error);
@@ -19,8 +22,6 @@ async function analyzeSentiment(text) {
 
 // Calculate average sentiment from news articles' titles
 async function calculateAverageSentiment(articles) {
-    console.log("calculate");
-
     if (articles.length === 0) return 0;
 
     let totalSentiment = 0;
@@ -31,8 +32,6 @@ async function calculateAverageSentiment(articles) {
         const title = article.title;
         if (title) {
             const sentimentScore = await analyzeSentiment(title);
-            console.log("sentiment");
-            console.log(sentimentScore);
             totalSentiment += sentimentScore; // Accumulate the sentiment scores
             count += 1;
         }
@@ -41,19 +40,26 @@ async function calculateAverageSentiment(articles) {
     // Wait for all promises to complete
     await Promise.all(sentimentPromises);
 
-    console.log("totalSentiment");
-    console.log(totalSentiment);
     let sentiment = 0;
 
-    if (totalSentiment > 5 ){
-        sentiment = 10
-    }else if (totalSentiment +5 < 0){
-        sentiment = 0
-    }else{
-        sentiment = totalSentiment+5
+    if (totalSentiment > 5) {
+        sentiment = 10;
+    } else if (totalSentiment + 5 < 0) {
+        sentiment = 0;
+    } else {
+        sentiment = totalSentiment + 5;
     }
 
     return sentiment;
+}
+
+// Check if two hours have passed
+function isTwoHoursApart(oldTimestamp) {
+    const currentTime = new Date();
+    const oldTime = new Date(oldTimestamp);
+    const differenceInMilliseconds = Math.abs(currentTime - oldTime);
+    const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
+    return differenceInHours >= 2;
 }
 
 export async function POST(req) {
@@ -75,16 +81,23 @@ export async function POST(req) {
             return NextResponse.json({ message: "Invalid JSON input" }, { status: 400 });
         }
 
-        console.log('Received user input:', body.userInput);
+        const coinName = body.userInput.trim().toLowerCase();
 
-        // Fetch news articles based on user input
-        const articles = await fetchCryptoNews(body.userInput);
+        // Check if we need to refetch data for the specific coin
+        if (!lastFetchTimes[coinName] || isTwoHoursApart(lastFetchTimes[coinName])) {
+            console.log(`Fetching new data for ${coinName}...`);
+            const articles = await fetchCryptoNews(coinName);
+            const averageSentiment = await calculateAverageSentiment(articles);
 
-        // Calculate average sentiment from article titles
-        const averageSentiment = await calculateAverageSentiment(articles);
-        console.log('Calculated average sentiment:', averageSentiment);
+            // Store the fetched data and update last fetch time
+            cachedNewsData[coinName] = { articles, averageSentiment };
+            lastFetchTimes[coinName] = new Date(); // Update last fetch time
+        } else {
+            console.log(`Returning cached data for ${coinName}...`);
+        }
 
-        // Return the average sentiment and articles
+        // Return the cached data
+        const { articles, averageSentiment } = cachedNewsData[coinName];
         return NextResponse.json({ averageSentiment, articles });
     } catch (err) {
         console.error('Internal server error:', err);

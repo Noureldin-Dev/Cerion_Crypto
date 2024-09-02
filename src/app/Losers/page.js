@@ -5,15 +5,21 @@ import React, { useEffect, useState } from 'react'
 import GetMarketTokens from '../GetMarketTokens'
 
 function getTopLosers(coins) {
-  // Filter out coins with non-negative 24-hour percentage change
-  const negativeLosers = coins.filter(coin => parseFloat(coin.price_24h_percent_change) < 0);
+  try{
 
-  // Sort the remaining coins by 24-hour percentage change in ascending order (most negative first)
-  const sortedLosers = negativeLosers.sort((a, b) => {
+    // Filter out coins with non-negative 24-hour percentage change
+    const negativeLosers = coins.filter(coin => parseFloat(coin.price_24h_percent_change) < 0);
+    
+    // Sort the remaining coins by 24-hour percentage change in ascending order (most negative first)
+    const sortedLosers = negativeLosers.sort((a, b) => {
       return parseFloat(a.price_24h_percent_change) - parseFloat(b.price_24h_percent_change);
-  });
-
-  return sortedLosers;
+    });
+    
+    return sortedLosers;
+  }
+  catch{
+    return []
+  }
 }
 
 
@@ -29,8 +35,40 @@ const Page = () => {
   }
 
   useEffect(() => {
-    getTokens();
-  }, []);
+    async function GetPrices() {
+      // const allCoins = await Fetchcryptoprices(,{
+      //   next:{
+      //     revalidate:3600
+      // }
+      // });
+
+      // // Separate coins by category
+      // setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
+      // setCryptoIndexes(allCoins.filter(coin => cryptoIndexAddresses.includes(coin.tokenAddress)));
+      // setStablecoins(allCoins.filter(coin => stablecoinAddresses.includes(coin.tokenAddress)));
+      const res = await fetch("/api/MarketData", {
+    
+        method: "POST",
+        body: JSON.stringify({ CoinsNeeded: "tokens" }), // Sending selected crypto
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      let allCoins = await res.json();
+      allCoins = allCoins.FetchedData
+      console.log(allCoins)
+      // console.log(json.FetchedData)
+      const sortedGainers = getTopLosers(allCoins);
+      setSortedTokens(sortedGainers);
+    }
+
+    GetPrices();
+  } ,[]);
 
   return (
     <Flex

@@ -97,7 +97,7 @@ const router = useRouter()
     }
 
     GetPrices();
-  } );
+  } ,[]);
 
   return (
     <Flex

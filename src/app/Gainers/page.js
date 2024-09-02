@@ -5,27 +5,60 @@ import React, { useEffect, useState } from 'react'
 import GetMarketTokens from '../GetMarketTokens'
 
 function getTopGainers(coins) {
-  const positiveGainers = coins.filter(coin => parseFloat(coin.price_24h_percent_change) >= 0);
-  const sortedGainers = positiveGainers.sort((a, b) => {
+  try{
+
+    console.log(coins)
+    const positiveGainers = coins.filter(coin => parseFloat(coin.price_24h_percent_change) >= 0);
+    const sortedGainers = positiveGainers.sort((a, b) => {
       return parseFloat(b.price_24h_percent_change) - parseFloat(a.price_24h_percent_change);
-  });
-  return sortedGainers;
+    });
+    return sortedGainers;
+  }
+  catch{
+    return []
+  }
 }
 
 const Page = () => {
   const [sortedTokens, setSortedTokens] = useState([]);
 
-  async function getTokens() {
-    const res = await GetMarketTokens();
-    if (res) {
-      const sortedGainers = getTopGainers(res);
-      setSortedTokens(sortedGainers);
-    }
-  }
+
 
   useEffect(() => {
-    getTokens();
-  }, []);
+    async function GetPrices() {
+      // const allCoins = await Fetchcryptoprices(,{
+      //   next:{
+      //     revalidate:3600
+      // }
+      // });
+
+      // // Separate coins by category
+      // setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
+      // setCryptoIndexes(allCoins.filter(coin => cryptoIndexAddresses.includes(coin.tokenAddress)));
+      // setStablecoins(allCoins.filter(coin => stablecoinAddresses.includes(coin.tokenAddress)));
+      const res = await fetch("/api/MarketData", {
+    
+        method: "POST",
+        body: JSON.stringify({ CoinsNeeded: "tokens" }), // Sending selected crypto
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      let allCoins = await res.json();
+      allCoins = allCoins.FetchedData
+      console.log(allCoins)
+      // console.log(json.FetchedData)
+      const sortedGainers = getTopGainers(allCoins);
+      setSortedTokens(sortedGainers);
+    }
+
+    GetPrices();
+  } ,[]);
 
   return (
     <Flex

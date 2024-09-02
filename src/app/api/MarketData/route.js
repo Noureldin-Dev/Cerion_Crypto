@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import FetchCryptoPrices from "../../FetchCryptoPrices";
+import GetMarketTokens from '@/app/GetMarketTokens';
 
 // In-memory storage
 let cachedData = [];
@@ -14,8 +15,6 @@ function isTwoHoursApart(oldTimestamp) {
 
     // Convert milliseconds to hours
     const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
-
-    console.log(`Time difference in hours: ${differenceInHours}`);
 
     // Check if the difference is at least 2 hours
     return differenceInHours >= 2;
@@ -36,14 +35,10 @@ export async function POST(req) {
             return NextResponse.json({ message: "Invalid JSON input" }, { status: 400 });
         }
 
-        // Log the current and last fetch times
-        console.log('Current time:', new Date().toISOString());
-        console.log('Last fetch time:', lastFetchTime);
-
         // Check if we need to refetch data
         if (!lastFetchTime || isTwoHoursApart(lastFetchTime)) {
             console.log('Fetching new data...');
-            cachedData = await FetchCryptoPrices(body.CoinsNeeded);
+            cachedData = await GetMarketTokens()
             lastFetchTime = new Date(); // Update last fetch time
         } else {
             console.log('Returning cached data...');
