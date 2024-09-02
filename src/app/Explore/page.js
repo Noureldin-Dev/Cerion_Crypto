@@ -7,6 +7,7 @@ import Fetchcryptoprices from "../FetchCryptoPrices";
 import { BsGraphDownArrow, BsGraphUpArrow } from "react-icons/bs";
 import { FaChartSimple } from 'react-icons/fa6';
 import { useRouter } from "next/navigation";
+import next from "next";
 
 
 
@@ -36,7 +37,7 @@ function Page() {
 const router = useRouter()
   // Coin addresses categorized by type
   const blueChipAddresses = [
-    "0x8eb8a3b98659cce290402893d0123abb75e3ab28", // Tether USD (USDT)
+    "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4", // avax
     "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", // Uniswap (UNI)
     "0x514910771af9ca656af840dff83e8264ecf986ca", // Chainlink (LINK)
   ];
@@ -49,21 +50,48 @@ const router = useRouter()
 
   const stablecoinAddresses = [
     // Add stablecoin addresses here
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    // "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0xdac17f958d2ee523a2206206994597c13d831ec7", // Tether USD (USDT)
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0x6c3ea9036406852006290770bedfcaba0e23a0e8"
 
   ];
 
   useEffect(() => {
     async function GetPrices() {
-      const allCoins = await Fetchcryptoprices([
-        ...blueChipAddresses.map(addr => ({ tokenAddress: addr })),
-        ...cryptoIndexAddresses.map(addr => ({ tokenAddress: addr })),
-        ...stablecoinAddresses.map(addr => ({ tokenAddress: addr })),
-      ]);
+      // const allCoins = await Fetchcryptoprices(,{
+      //   next:{
+      //     revalidate:3600
+      // }
+      // });
 
-      // Separate coins by category
-      setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
+      // // Separate coins by category
+      // setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
+      // setCryptoIndexes(allCoins.filter(coin => cryptoIndexAddresses.includes(coin.tokenAddress)));
+      // setStablecoins(allCoins.filter(coin => stablecoinAddresses.includes(coin.tokenAddress)));
+      const res = await fetch("/api/coinsdata", {
+        next: {
+          revalidate:3600
+        },
+        method: "POST",
+        body: JSON.stringify({ CoinsNeeded: [
+             ...blueChipAddresses.map(addr => ({ tokenAddress: addr })),
+             ...cryptoIndexAddresses.map(addr => ({ tokenAddress: addr })),
+             ...stablecoinAddresses.map(addr => ({ tokenAddress: addr })),
+           ] }), // Sending selected crypto
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      let allCoins = await res.json();
+      allCoins = allCoins.FetchedData
+      // console.log(json.FetchedData)
+            setBlueChips(allCoins.filter(coin => blueChipAddresses.includes(coin.tokenAddress)));
       setCryptoIndexes(allCoins.filter(coin => cryptoIndexAddresses.includes(coin.tokenAddress)));
       setStablecoins(allCoins.filter(coin => stablecoinAddresses.includes(coin.tokenAddress)));
     }

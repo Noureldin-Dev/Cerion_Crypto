@@ -5,7 +5,8 @@ import Moralis from 'moralis';
 
 export default async function GetPrices (Contracts){
 
-
+console.log("Contracts")
+console.log(Contracts)
 
 let SkimmedContracts = Contracts[0,24]
     
@@ -26,6 +27,7 @@ catch{
       },{
         "tokens": Contracts
       });
+      console.log(response.raw)
       return(response.raw);
     
 
