@@ -4,7 +4,7 @@ import { Flex, Heading, Text, Button, Box, Image, Progress, Img, Link } from '@c
 import React, { useState } from 'react';
 
 // Predefined array of options (only Bitcoin and Ethereum)
-const topCryptos = ['Bitcoin', 'Ethereum', 'Cardano', 'Polygon', 'Chainlink', "Uniswap"];
+const topCryptos = ['Bitcoin', 'Ethereum', 'Polygon', 'Chainlink', "Uniswap"];
 
 const sentimentColor = (sentiment) => {
   if (sentiment >= 70) return 'green.500';  // Positive sentiment

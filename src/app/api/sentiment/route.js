@@ -43,8 +43,17 @@ async function calculateAverageSentiment(articles) {
 
     console.log("totalSentiment");
     console.log(totalSentiment);
+    let sentiment = 0;
 
-    return totalSentiment > 5? 10 : totalSentiment+5;
+    if (totalSentiment > 5 ){
+        sentiment = 10
+    }else if (totalSentiment +5 < 0){
+        sentiment = 0
+    }else{
+        sentiment = totalSentiment+5
+    }
+
+    return sentiment;
 }
 
 export async function POST(req) {
