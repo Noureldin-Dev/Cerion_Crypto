@@ -61,8 +61,9 @@ const BuyCryptoPage = () => {
                 pointerEvents="none"
                 color={color}
                 fontSize="1.2em"
-                children={currency === "EUR" ? "€" : "$"}
-              />
+              >
+                {currency === "EUR" ? "€" : "$"}
+              </InputLeftElement>
               <Input
                 placeholder="0"
                 value={amount}
