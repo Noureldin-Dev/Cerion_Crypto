@@ -28,7 +28,7 @@ export default function Home() {
   }, []);
 
   return (
-    <Flex flexDir="column" justify="center" align="center" height="100%">
+<>
       {account == null ?
     <Box  bg={bg} color={color} minHeight="100%">
         <AbsoluteCenter>
@@ -55,11 +55,11 @@ export default function Home() {
         align="flex-start"
         minHeight="100%"
         width="100%"
-        pt="20px"
-      >
+          pt="20px"
+        >
           <WalletOverview address={account} />
         </Flex>
       }
-    </Flex>
+</>
   );
 }

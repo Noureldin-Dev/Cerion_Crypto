@@ -64,7 +64,7 @@ const SettingsPage = () => {
       <Box width="100%" p={6} bg={cardBg} borderRadius="lg" boxShadow="md" color={color}>
         <Heading size="md" mb={4}>Submit Feedback</Heading>
         <Text fontSize="md" mb={4} lineHeight="tall">
-          We value your opinion. Please share your thoughts or report any issues you've encountered.
+          We value your opinion. Please share your thoughts or report any issues you&apos;ve encountered.
         </Text>
         <Textarea
           placeholder="Share your feedback..."

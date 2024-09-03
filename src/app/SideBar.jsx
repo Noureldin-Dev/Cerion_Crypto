@@ -108,17 +108,11 @@ const SideBar = () => {
               <ConnectWallet isSideBar/>
             </Flex>
           }
+          <SidebarButton Title={account != null ? "My Wallet" : "Home"} Icon={<GrHome />} Destination={account != null ? undefined : "/"} />
           <SidebarButton Title={"Explore"} Icon={<GrOverview />} />
           <SidebarButton Destination="AI" Title={"AI Market Analysis"} Icon={<LuBrain />} />
           
-
-          {account != null? 
-<>
-          <SidebarButton Title={"My Wallet"} Icon={<GrHome />} />
-          {/* <SidebarButton Title={"Send"} Icon={<FiSend />} /> */}
-          </>
-          :<></>
-          }
+          
           <SidebarButton Title={"Buy Crypto"} Destination="Buy" Icon={<HiPlus />} />
           <SidebarButton Title={"Settings"} Icon={<FiSettings />} />
           </Flex>

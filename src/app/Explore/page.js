@@ -156,6 +156,7 @@ function Page() {
             height="80px"
             _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
             transition="all 0.2s"
+            onClick={() => router.push("/Pools")}
           >
             <HStack justify="space-between">
               <Text fontSize="lg" fontWeight="bold">Pools</Text>
@@ -196,7 +197,7 @@ function Page() {
                         <Text fontSize="sm" color="gray.400">{coin.tokenSymbol}</Text>
                       </VStack>
                     </HStack>
-                    <Text fontSize="sm" color="blue.400" fontWeight="bold">Blue Chip</Text>
+                    {/* <Text fontSize="sm" color="blue.400" fontWeight="bold">Blue Chip</Text> */}
                   </HStack>
 
                   <VStack align="start" spacing={1}>
@@ -253,7 +254,7 @@ function Page() {
                         <Text fontSize="sm" color="gray.400">{coin.tokenSymbol}</Text>
                       </VStack>
                     </HStack>
-                    <Text fontSize="sm" color="purple.400" fontWeight="bold">Index</Text>
+                    {/* <Text fontSize="sm" color="purple.400" fontWeight="bold">Index</Text> */}
                   </HStack>
 
                   <VStack align="start" spacing={1}>
@@ -310,7 +311,7 @@ function Page() {
                         <Text fontSize="sm" color="gray.400">{coin.tokenSymbol}</Text>
                       </VStack>
                     </HStack>
-                    <Text fontSize="sm" color="teal.400" fontWeight="bold">Stablecoin</Text>
+                    {/* <Text fontSize="sm" color="teal.400" fontWeight="bold">Stablecoin</Text> */}
                   </HStack>
 
                   <VStack align="start" spacing={1}>

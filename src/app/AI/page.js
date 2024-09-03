@@ -1,10 +1,10 @@
 "use client";
 
 import { Flex, Heading, Text, Button, Box, Image, Progress, Img, Link, useColorModeValue, Spinner } from '@chakra-ui/react';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+// import ArticlePlaceHolderImage from "../../public/article.png";
 // Predefined array of options (only Bitcoin and Ethereum)
-const topCryptos = ['Bitcoin', 'Ethereum', 'Polygon', 'Chainlink', "Uniswap"];
+const topCryptos = ['Bitcoin', 'Ethereum'];
 
 const sentimentColor = (sentiment) => {
   if (sentiment >= 70) return 'green.500';  // Positive sentiment
@@ -13,7 +13,7 @@ const sentimentColor = (sentiment) => {
 };
 
 const Page = () => {
-  const [sentimentData, setSentimentData] = useState(null);
+  const [sentimentData, setSentimentData] = useState({});
   const [selectedCrypto, setSelectedCrypto] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState('');
@@ -23,19 +23,20 @@ const Page = () => {
   
   const handleSelectCrypto = (crypto) => {
     setSelectedCrypto(crypto);
-    setSentimentData(null);
   };
 
   const handleAnalyze = async () => {
     if (!selectedCrypto) return;
 
+    if (sentimentData[selectedCrypto]) {
+      // If data for this crypto already exists, just update the state
+      setSentimentData(prevState => ({ ...prevState, [selectedCrypto]: prevState[selectedCrypto] }));
+      return;
+    }
+
     setIsAnalyzing(true);
-    setSentimentData(null);
 
     try {
-      setAnalysisStep('Fetching articles...');
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate fetching delay
-
       setAnalysisStep('Analyzing articles...');
       const res = await fetch("/api/sentiment", {
         method: "POST",
@@ -49,10 +50,8 @@ const Page = () => {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
 
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate analysis delay
-
       const json = await res.json();
-      setSentimentData(json);
+      setSentimentData(prevState => ({ ...prevState, [selectedCrypto]: json }));
     } catch (error) {
       console.error('Error analyzing data:', error);
       setAnalysisStep('Error occurred during analysis.');
@@ -61,6 +60,13 @@ const Page = () => {
       setAnalysisStep('');
     }
   };
+
+  useEffect(() => {
+    if (selectedCrypto && sentimentData[selectedCrypto]) {
+      // If data for the selected crypto already exists, update the state immediately
+      setSentimentData(prevState => ({ ...prevState, [selectedCrypto]: prevState[selectedCrypto] }));
+    }
+  }, [selectedCrypto]);
 
   return (
     <Flex 
@@ -90,7 +96,7 @@ const Page = () => {
         </Text>
       </Box>
       <Text fontSize="lg" fontWeight="medium" mt={4}>Select a cryptocurrency to analyze:</Text>
-      <Flex flexWrap="wrap" gap={4}>
+      <Flex alignItems="center" flexWrap="wrap" gap={4}>
         {topCryptos.map((crypto, index) => (
           <Button
             variant={selectedCrypto === crypto ? "solid" : "outline"}
@@ -101,7 +107,8 @@ const Page = () => {
           >
             {crypto}
           </Button>
-        ))}
+        ))} 
+        <Text>More coming soon...</Text>
       </Flex>
 
       {selectedCrypto && (
@@ -124,16 +131,16 @@ const Page = () => {
         </Flex>
       )}
 
-      {sentimentData && (
+      {selectedCrypto && sentimentData[selectedCrypto] && (
         <>
           <Box width="100%" mt={6}>
             <Box p={6} bg={cardBg} borderRadius="lg" boxShadow="md" color={color}>
               <Text fontSize="lg" fontWeight="bold" mb={2}>Overall Sentiment:</Text>
-              <Text fontSize="2xl" fontWeight="bold" mb={4}>{(sentimentData.averageSentiment).toFixed(1)}/10</Text>
+              <Text fontSize="2xl" fontWeight="bold" mb={4}>{(sentimentData[selectedCrypto].averageSentiment).toFixed(1)}/10</Text>
               <Progress
-                value={sentimentData.averageSentiment === 0 ? 1 : (sentimentData.averageSentiment) / 10 * 100}
+                value={sentimentData[selectedCrypto].averageSentiment === 0 ? 1 : (sentimentData[selectedCrypto].averageSentiment) / 10 * 100}
                 size="lg"
-                colorScheme={sentimentData.averageSentiment > 5 ? 'green' : 'red'}
+                colorScheme={sentimentData[selectedCrypto].averageSentiment > 5 ? 'green' : 'red'}
                 borderRadius="full"
               />
             </Box>
@@ -141,7 +148,7 @@ const Page = () => {
 
           <Heading size="sm" mt={6} mb={3}>Articles used in analysis</Heading>
           <Flex flexDirection="column" gap={4}>
-            {sentimentData.articles.map(article =>
+            {sentimentData[selectedCrypto].articles.map(article =>
               <Box key={article.url} p={3} bg={cardBg} borderRadius="lg" boxShadow="md">
                 <Flex flexDir={["column", "column", "row"]} gap={4} alignItems="center">
                   <Img borderRadius="lg" src={article.image} objectFit="cover" maxH="120px" maxW="120px" flexShrink={0}/>

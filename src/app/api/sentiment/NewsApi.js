@@ -14,7 +14,7 @@ export default async function fetchCryptoNews(cryptoName) {
     // Make API request to NewsAPI
     const response = await axios.get(BASE_URL, {
       params: {
-        q: `"${cryptoName}"`, // Search for exact phrase
+        q: `"${cryptoName} AND crypto"`, // Search for exact phrase
         apiKey: API_KEY,
         sortBy: 'relevancy',
         pageSize: 20, // Fetch more articles initially
