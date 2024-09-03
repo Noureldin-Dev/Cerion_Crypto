@@ -1,6 +1,6 @@
 "use client"
 
-import { Flex, Heading, Text, Box, Container, VStack, Image, useColorModeValue, SimpleGrid } from '@chakra-ui/react'
+import { Flex, Heading, Text, Box, Container, VStack, Image, SimpleGrid } from '@chakra-ui/react'
 import React from 'react'
 import { LuConstruction } from "react-icons/lu";
 
@@ -15,11 +15,11 @@ const Page = () => {
   const darkSubtextColor = 'gray.400'
 
   return (
-    <Container maxW="container.xl" py={[6, 8, 10]} px={[4, 6, 8]} bg={useColorModeValue(lightBg, darkBg)} minH="100%">
+    <Container maxW="container.xl" py={[6, 8, 10]} px={[4, 6, 8]} bg={lightBg} _dark={{bg: darkBg}} minH="100%">
       <VStack spacing={[6, 8]} align="stretch">
         <Box textAlign="center">
-          <Heading as="h1" size={["xl", "2xl"]} mb={2} color={useColorModeValue(lightColor, darkColor)}>Crypto Liquidity Pools 💧</Heading>
-          <Text fontSize={["lg", "xl"]} color={useColorModeValue(lightSubtextColor, darkSubtextColor)}>Explore and manage your liquidity positions</Text>
+          <Heading as="h1" size={["xl", "2xl"]} mb={2} color={lightColor} _dark={{color: darkColor}}>Crypto Liquidity Pools 💧</Heading>
+          <Text fontSize={["lg", "xl"]} color={lightSubtextColor} _dark={{color: darkSubtextColor}}>Explore and manage your liquidity positions</Text>
         </Box>
 
         <Flex
@@ -29,38 +29,40 @@ const Page = () => {
           borderRadius="lg" 
           boxShadow="xl" 
           p={[6, 8]} 
-          bg={useColorModeValue(lightCardBg, darkCardBg)}
+          bg={lightCardBg}
+          _dark={{bg: darkCardBg}}
           textAlign="center"
         >
           <Box mb={4}>
             <LuConstruction size={60} />
           </Box>
 
-          <Heading as="h2" size={["lg", "xl"]} mb={4} color={useColorModeValue(lightColor, darkColor)}>
+          <Heading as="h2" size={["lg", "xl"]} mb={4} color={lightColor} _dark={{color: darkColor}}>
             Coming Soon!
           </Heading>
-          <Text fontSize={["md", "lg"]} color={useColorModeValue(lightSubtextColor, darkSubtextColor)}>
-            We're working hard to bring you the best liquidity pool management experience. 
+          <Text fontSize={["md", "lg"]} color={lightSubtextColor} _dark={{color: darkSubtextColor}}>
+            We&apos;re working hard to bring you the best liquidity pool management experience. 
             Stay tuned for updates!
           </Text>
         </Flex>
 
-        <Flex  alignItems="center" flexWrap="wrap" justifyContent={["center", "center", "space-between"]} gap={10} columns={[1, 2, 3]} spacing={6}>
+        <Flex alignItems="center" flexWrap="wrap" justifyContent={["center", "center", "space-between"]} gap={10} columns={[1, 2, 3]} spacing={6}>
           {['Pool Creation', 'Yield Farming', 'Analytics'].map((feature) => (
             <Box 
-            flexBasis="30%"
-            minW="300px"
+              flexBasis="30%"
+              minW="300px"
               key={feature} 
               p={6} 
-              bg={useColorModeValue(lightCardBg, darkCardBg)} 
+              bg={lightCardBg}
+              _dark={{bg: darkCardBg}}
               borderRadius="lg" 
               boxShadow="md"
               textAlign="center"
             >
-              <Heading as="h3" size={["md", "lg"]} mb={2} color={useColorModeValue(lightColor, darkColor)}>
+              <Heading as="h3" size={["md", "lg"]} mb={2} color={lightColor} _dark={{color: darkColor}}>
                 {feature}
               </Heading>
-              <Text fontSize={["sm", "md"]} color={useColorModeValue(lightSubtextColor, darkSubtextColor)}>
+              <Text fontSize={["sm", "md"]} color={lightSubtextColor} _dark={{color: darkSubtextColor}}>
                 Advanced {feature.toLowerCase()} features coming soon.
               </Text>
             </Box>
