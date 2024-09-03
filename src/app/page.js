@@ -55,7 +55,7 @@ export default function Home() {
         align="flex-start"
         minHeight="100%"
         width="100%"
-          pt="20px"
+
         >
           <WalletOverview address={account} />
         </Flex>

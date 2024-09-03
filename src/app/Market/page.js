@@ -72,7 +72,7 @@ const Page = () => {
   };
 
   return (
-    <Container maxW="container.xl" py={10} bg={lightBg} _dark={{bg: darkBg}} minH="100vh">
+    <Container maxW="container.xl"  bg={lightBg} _dark={{bg: darkBg}} minH="100vh">
       <VStack spacing={8} align="stretch">
         <Box textAlign="center">
           <Heading as="h1" size="2xl" mb={2} color={lightColor} _dark={{color: darkColor}}>Crypto Market Overview 📊</Heading>

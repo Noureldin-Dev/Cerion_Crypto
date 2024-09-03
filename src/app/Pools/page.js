@@ -15,7 +15,7 @@ const Page = () => {
   const darkSubtextColor = 'gray.400'
 
   return (
-    <Container maxW="container.xl" py={[6, 8, 10]} px={[4, 6, 8]} bg={lightBg} _dark={{bg: darkBg}} minH="100%">
+    <Container maxW="container.xl"  bg={lightBg} _dark={{bg: darkBg}} minH="100%">
       <VStack spacing={[6, 8]} align="stretch">
         <Box textAlign="center">
           <Heading as="h1" size={["xl", "2xl"]} mb={2} color={lightColor} _dark={{color: darkColor}}>Crypto Liquidity Pools 💧</Heading>
@@ -33,8 +33,14 @@ const Page = () => {
           _dark={{bg: darkCardBg}}
           textAlign="center"
         >
-          <Box mb={4}>
-            <LuConstruction size={60} />
+
+            {/* for dark mode, should be white and no comment on possitoon */}
+          <Box position="absolute" left="-9999px" visibility="hidden" _dark={{position: "static", left: "auto", visibility: "visible", mb: 4}} >
+            <LuConstruction  size={60} color="white"/>
+          </Box>
+          {/* for light mode should be black and disappare in dark mode */}
+          <Box mb={4} _dark={{position: "absolute", left: "-9999px", visibility: "hidden"}}>
+            <LuConstruction size={60} color="black"/>
           </Box>
 
           <Heading as="h2" size={["lg", "xl"]} mb={4} color={lightColor} _dark={{color: darkColor}}>

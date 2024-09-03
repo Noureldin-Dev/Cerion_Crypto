@@ -91,7 +91,7 @@ function Page() {
   }, []);
 
   return (
-    <Container maxW="container.xl" py={10} bg={bg} color={color}>
+    <Container maxW="container.xl"  bg={bg} color={color}>
       <VStack spacing={10} align="stretch">
         <Heading size="xl" mb={6}>Explore Crypto</Heading>
         

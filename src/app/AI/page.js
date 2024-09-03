@@ -74,8 +74,8 @@ const Page = () => {
       align="flex-start" 
       minHeight="100%" 
       width="100%" 
-      pt="40px" 
-      pb="40px"
+
+
       px={["20px", "40px", "60px", "80px"]}
       flexDirection="column" 
       gap={6} 

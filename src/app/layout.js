@@ -30,7 +30,7 @@ export default function RootLayout({
               <SearchBar />
               
               </Flex>
-              <Flex  padding={18}>
+              <Flex  padding={1}>
               <Flex
               // background="teal"
       justify="center" // Center horizontally
