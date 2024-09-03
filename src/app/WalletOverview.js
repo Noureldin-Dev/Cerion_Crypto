@@ -15,6 +15,10 @@ const WalletOverview = ({ address }) => {
   const [walletValue, setWalletValue] = useState(null);
   const [percentageChange, setPercentageChange] = useState(null);
 
+  const formatNumber = (num) => {
+    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   useEffect(() => {
     const fetchBalances = async () => {
       try {
@@ -26,20 +30,23 @@ const WalletOverview = ({ address }) => {
           const cryptoPrices = await fetchCryptoPrices(contractsNeeded).then((prices) => {
             let totalWalletValue = 0;
             let totalChange = 0;
-            Balances.forEach(token => {
+            const validBalances = Balances.filter(token => {
               const priceInfo = prices.find(price => price.tokenSymbol === token.Symbol);
               if (priceInfo) {
-                // Ensure the price is a number before calling .toFixed()
                 const price = parseFloat(priceInfo.usdPriceFormatted);
-                token.Price = price.toFixed(2);
-                token.Value = (price * parseFloat(token.Balance)).toFixed(2);
-                totalWalletValue += parseFloat(token.Value);
-                totalChange += (priceInfo["24hrPercentChange"] || 0) * parseFloat(token.Balance) / 100;
+                if (!isNaN(price)) {
+                  token.Price = formatNumber(price);
+                  token.Value = formatNumber(price * parseFloat(token.Balance));
+                  totalWalletValue += price * parseFloat(token.Balance);
+                  totalChange += (priceInfo["24hrPercentChange"] || 0) * parseFloat(token.Balance) / 100;
+                  return true;
+                }
               }
+              return false;
             });
-            setWalletValue(totalWalletValue.toFixed(2));
+            setWalletValue(formatNumber(totalWalletValue));
             setPercentageChange(totalChange.toFixed(2));
-            setBalances(Balances);
+            setBalances(validBalances);
           });
         });
       } catch (error) {
@@ -54,7 +61,7 @@ const WalletOverview = ({ address }) => {
   }, [address]);
 
   return (
-    <Flex minW="80%" flexDir="column" gap={5} p={5} bg="#1D1D21" padding={30} borderRadius="md" boxShadow="md">
+    <Flex minW="80%" flexDir="column" gap={5} p={5} bg="#1D1D21" padding={30} borderRadius="lg" boxShadow="md">
       {walletValue == null ? (
                 <>
 
@@ -95,9 +102,9 @@ const WalletOverview = ({ address }) => {
                           balances.map((coin, index) => (
                             <Tr key={index}>
                               <Td>{coin.Coin}</Td>
-                              <Td display={["none","none","none","table-cell"]}>${parseFloat(coin.Price).toFixed(2)}</Td>
-                              <Td display={["none","none","table-cell","table-cell"]} isNumeric>{parseFloat(coin.Balance).toFixed(2)}</Td>
-                              <Td isNumeric>${parseFloat(coin.Value).toFixed(2)}</Td>
+                              <Td display={["none","none","none","table-cell"]}>${coin.Price}</Td>
+                              <Td display={["none","none","table-cell","table-cell"]} isNumeric>{formatNumber(coin.Balance)}</Td>
+                              <Td isNumeric>${coin.Value}</Td>
                             </Tr>
                           ))
                         ) : (
@@ -145,9 +152,9 @@ const WalletOverview = ({ address }) => {
                     balances.map((coin, index) => (
                       <Tr key={index}>
                         <Td>{coin.Coin}</Td>
-                        <Td display={["none","none","none","table-cell"]}>${parseFloat(coin.Price).toFixed(2)}</Td>
-                        <Td display={["none","none","table-cell","table-cell"]} isNumeric>{parseFloat(coin.Balance).toFixed(2)}</Td>
-                        <Td isNumeric>${parseFloat(coin.Value).toFixed(2)}</Td>
+                        <Td display={["none","none","none","table-cell"]}>${coin.Price}</Td>
+                        <Td display={["none","none","table-cell","table-cell"]} isNumeric>{formatNumber(coin.Balance)}</Td>
+                        <Td isNumeric>${coin.Value}</Td>
                       </Tr>
                     ))
                   ) : (

@@ -1,7 +1,7 @@
 // theme.js (or theme.ts)
 const theme = {
     config: {
-      initialColorMode: 'system', // Or 'dark' if you want to start in dark mode
+      // initialColorMode: "light", // Or 'dark' if you want to start in dark mode
       useSystemColorMode: false,
     },
     // styles: {

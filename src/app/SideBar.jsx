@@ -35,11 +35,12 @@ const SideBar = () => {
   const dispatch = useDispatch()
   const bg = useColorModeValue('#EBEBED', '#1D1D21')
   const color = useColorModeValue('black', 'white')
+  const buttonBg = useColorModeValue('#EBEBED', '#1D1D21')
+  const buttonHoverBg = useColorModeValue('#C8C8C8', '#2D2D32')
+  const buttonColor = useColorModeValue('#222222', '#E0E0E0')
 
-const toast = useToast()
+  const toast = useToast()
   const popupRef = useRef(null);
-
-
 
   async function disconnectWallet() {
     window.ethereum.on("disconnect", () => {});
@@ -78,23 +79,24 @@ const toast = useToast()
     <>
       <Flex w={[90, 90, 300]} height="100vh" padding={2} position="sticky" flexDir="column" gap={9} bgColor={bg} color={color} textColor={color}>
 
-        <Flex marginTop={10} flexDir="column" gap={7}>
+        <Flex  bgColor={bg} color={color} textColor={color} marginTop={10} flexDir="column" gap={7}>
         {account != null ? 
          <Button
-
          height={20}
          borderRadius={7}
-         backgroundColor="#1D1D21"
-         _hover={{ bg: "#2D2D32" }}
-         textColor="#CECFD1"
+         bg={buttonBg}
+         _hover={{ bg: buttonHoverBg }}
+         color={buttonColor}
          padding={5}
-         onClick={onOpen}
+         onClick={isOpen? onClose: onOpen}
+         transition="all 0.2s"
+         boxShadow="md"
        >
-         <Flex gap={2}>
-           <Image width={40} height={40} src={pfp} />
-           <Flex display={["none", "none", "unset"]} alignItems="flex-start" flexDir="column" gap={2}>
-             <Text display={["none", "none", "unset"]} size="sm">{account == null? "":shortenAddress(account)}</Text>
-             <Text display={["none", "none", "flex"]} size="sm">Eth Address</Text>
+         <Flex  align="center" justify="center">
+           <Image width={40} height={40} src={pfp} alt="Profile Picture" />
+           <Flex display={["none", "none", "flex"]} flexDirection="column" alignItems="flex-start" ml={3}>
+             <Text fontWeight="bold">{account ? shortenAddress(account) : ""}</Text>
+             <Text fontSize="sm" opacity={0.8}>Eth Address</Text>
            </Flex>
          </Flex>
        </Button>
@@ -113,7 +115,7 @@ const toast = useToast()
           {account != null? 
 <>
           <SidebarButton Title={"My Wallet"} Icon={<GrHome />} />
-          <SidebarButton Title={"Send"} Icon={<FiSend />} />
+          {/* <SidebarButton Title={"Send"} Icon={<FiSend />} /> */}
           </>
           :<></>
           }
@@ -124,14 +126,15 @@ const toast = useToast()
 
       {isOpen && (
         <Flex
+        bgColor={bg} color={color} textColor={color}
         flexDirection="column"
         gap={4}
           ref={popupRef}
           position="absolute"
           top="120px" // adjust based on your layout
           left={20} // adjust based on your layout
-          backgroundColor="#16161A"
-          color="white"
+          // backgroundColor="#16161A"
+          // color="white"
           padding={4}
           borderRadius="8px"
           boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
@@ -143,7 +146,11 @@ const toast = useToast()
           <Text>Eth Address • MetaMask</Text>
           <Flex flexDir="column">
           {/* <Button variant="link" textColor="white">Connect another wallet</Button> */}
-          <Button onClick={disconnectWallet} variant="outline" color="white" _hover={{bg:"#2D2D32"}} >Disconnect Wallet</Button>
+          <Button
+       
+colorScheme="red"
+
+          onClick={disconnectWallet} variant="outline"  >Disconnect Wallet</Button>
           </Flex>
         </Flex>
       )}

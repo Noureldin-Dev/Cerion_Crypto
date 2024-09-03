@@ -1,17 +1,20 @@
-"use client"
-import { useEffect, useState } from "react"
-import { usePathname, useRouter } from 'next/navigation'
-import { isAddress } from "ethers"
-import WalletOverview from "../WalletOverview"
-import { Flex } from "@chakra-ui/react"
+"use client";
 
-export default function Page({ params }) {
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from 'next/navigation';
+import { isAddress } from "ethers";
+import WalletOverview from "../WalletOverview";
+import { Flex, Spinner, Text } from "@chakra-ui/react";
+
+export default function Page() {
   const router = useRouter();
   const pathname = usePathname();
-  const [IsValidAddress, setIsValidAddress] = useState(null);
+  const [isValidAddress, setIsValidAddress] = useState(null);
 
   useEffect(() => {
-    if (isAddress(pathname.substring(1))) {
+    const address = pathname.substring(1);
+
+    if (isAddress(address)) {
       setIsValidAddress(true);
     } else {
       setIsValidAddress(false);
@@ -21,14 +24,19 @@ export default function Page({ params }) {
 
   return (
     <Flex
-      justify="center" // Center horizontally
-      align="flex-start" // Align to the top
-      minHeight="100%" // Ensure the container takes at least the full viewport height
-      width="100vw" // Full viewport width
-      pt="20px" // Optional: add some padding to the top
-      // backgroundColor="whitesmoke" // Optional: add background color
+      justify="center"
+      align="flex-start"
+      minHeight="100%"
+      width="100%"
+      pt="20px"
     >
-      {IsValidAddress && <WalletOverview address={params.Addresses} />}
+      {isValidAddress === null ? (
+        <Spinner size="xl" color="white" />
+      ) : isValidAddress ? (
+        <WalletOverview address={pathname.substring(1)} />
+      ) : (
+        <Text color="red.500">Invalid Address</Text>
+      )}
     </Flex>
   );
 }

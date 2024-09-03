@@ -76,9 +76,9 @@ const Page = () => {
       bg={bg} 
       color={color}
     >
-      <Heading as="h1" size="2xl" mb={4}>AI Sentiment Analysis</Heading>
+      <Heading as="h1" size="xl" mb={4}>AI Sentiment Analysis</Heading>
       <Box p={6} bg={cardBg} borderRadius="lg" boxShadow="md" color={color}>
-        <Heading size="lg" mb={4}>How AI Sentiment Analysis Works</Heading>
+        <Heading size="md" mb={4}>How AI Sentiment Analysis Works</Heading>
         <Text fontSize="md" mb={4} lineHeight="tall">
           AI sentiment analysis uses machine learning models to determine the emotional tone of text. The model processes the text and assigns a sentiment score based on the words and phrases it contains.
         </Text>
@@ -128,8 +128,8 @@ const Page = () => {
         <>
           <Box width="100%" mt={6}>
             <Box p={6} bg={cardBg} borderRadius="lg" boxShadow="md" color={color}>
-              <Text fontSize="xl" fontWeight="bold" mb={2}>Overall Sentiment:</Text>
-              <Text fontSize="3xl" fontWeight="bold" mb={4}>{(sentimentData.averageSentiment).toFixed(1)}/10</Text>
+              <Text fontSize="lg" fontWeight="bold" mb={2}>Overall Sentiment:</Text>
+              <Text fontSize="2xl" fontWeight="bold" mb={4}>{(sentimentData.averageSentiment).toFixed(1)}/10</Text>
               <Progress
                 value={sentimentData.averageSentiment === 0 ? 1 : (sentimentData.averageSentiment) / 10 * 100}
                 size="lg"
@@ -139,14 +139,14 @@ const Page = () => {
             </Box>
           </Box>
 
-          <Heading size="md" mt={6} mb={3}>Articles used in analysis</Heading>
+          <Heading size="sm" mt={6} mb={3}>Articles used in analysis</Heading>
           <Flex flexDirection="column" gap={4}>
             {sentimentData.articles.map(article =>
               <Box key={article.url} p={3} bg={cardBg} borderRadius="lg" boxShadow="md">
                 <Flex flexDir={["column", "column", "row"]} gap={4} alignItems="center">
                   <Img borderRadius="lg" src={article.image} objectFit="cover" maxH="120px" maxW="120px" flexShrink={0}/>
                   <Flex flexDirection="column" justifyContent="space-between" gap={2} flex={1}>
-                    <Heading size={["sm","sm","md"]}>{article.title}</Heading>
+                    <Heading size="xs">{article.title}</Heading>
                     <Button 
                       onClick={() => window.open(article.url, '_blank').focus()} 
                       variant="link" 
